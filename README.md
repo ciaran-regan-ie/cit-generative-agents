@@ -23,11 +23,11 @@ pip install -r requirements.txt
 ```
 OPENAI_API_KEY=<your_api_key>
 ```
-4. Ensure you have a CSV file with YouTube comments in `sentiment_analysis/data`
+4. Ensure you have a CSV file with YouTube comments in `sentiment-analysis/data`
 
 ## Usage
 Run the following command to perform sentiment analysis on the YouTube comments
 ```
-python sentiment_analysis/main.py
+python3 sentiment-analysis/main.py
 ```
-The results will be saved in `sentiment_analysis/data` as `comments_with_sentiment.csv`
+The results will be saved in `sentiment-analysis/data` as `comments_with_sentiment.csv`
