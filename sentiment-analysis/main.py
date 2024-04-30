@@ -13,21 +13,29 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 client = openai.OpenAI()
 
 def get_sentiment(comment: str) -> dict:
-    response = client.chat.completions.create(
-        model="gpt-4-turbo",
-        messages=[
-            {"role": "system", "content": "Determine the overall sentiment of the text as either positive, negative, or neutral, and rate the intensity of this sentiment on a scale from 0 (extremely negative) to 10 (extremely positive). Then, identify which basic emotion—anger, fear, enjoyment, sadness, disgust, or surprise—is most prominently reflected in the text. Based on the words and phrases used, along with the emotional tone, explain why you chose this sentiment rating and emotion. The response should be in JSON format with values for sentiment, intensity, emotion, and explanation."},
-            {"role": "user", "content": comment}
-        ]
-    )
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4-turbo",
+            messages=[
+                {"role": "system", "content": "Determine the overall sentiment of the text as either positive, negative, or neutral, and rate the intensity of this sentiment on a scale from 0 (extremely negative) to 10 (extremely positive). Then, identify which basic emotion—anger, fear, enjoyment, sadness, disgust, or surprise—is most prominently reflected in the text. Based on the words and phrases used, along with the emotional tone, explain why you chose this sentiment rating and emotion. The response should be in JSON format with values for sentiment, intensity, emotion, and explanation."},
+                {"role": "user", "content": comment}
+            ]
+        )
 
-    # Parsing the response into a dictionary
-    response_data = response.choices[0].message.content.strip()
+        # Retrieve the response content and parse it safely
+        response_data = response.choices[0].message.content.strip()
 
-    # Converting the JSON string into a Python dictionary
-    sentiment_data = json.loads(response_data)
+        # Convert the JSON string into a Python dictionary safely
+        sentiment_data = json.loads(response_data)
 
-    return sentiment_data
+        return sentiment_data
+
+    except (KeyError, json.JSONDecodeError) as e:
+        # Log the error for debugging
+        print(f"An error occurred while parsing the sentiment data: {str(e)}")
+
+        # Return an empty dictionary in case of an error
+        return {}
 
 
 def process_comments(file: str):
