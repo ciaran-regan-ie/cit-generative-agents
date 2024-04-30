@@ -13,40 +13,30 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 client = openai.OpenAI()
 
 def get_sentiment(comment: str) -> dict:
-    """
-    Get the sentiment of a comment using OpenAI's GPT-4-turbo model.
-
-    Args:
-        comment (str): The comment to analyze
-
-    Returns:
-        dict: A dictionary containing the sentiment, intensity, emotion, and explanation.
-    """
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "Determine the overall sentiment of the text as either positive, negative, or neutral, and rate the intensity of this sentiment on a scale from 0 (extremely negative) to 10 (extremely positive). Then, identify which basic emotion—anger, fear, enjoyment, sadness, disgust, or surprise—is most prominently reflected in the text. Based on the words and phrases used, along with the emotional tone, explain why you chose this sentiment rating and emotion. The response should be in JSON format with values for sentiment, intensity, emotion, and explanation."},
             {"role": "user", "content": comment}
-        ],
-        response_format={ "type": "json_object" }
+        ]
     )
 
-    # Extract the content and parse it into a dictionary
-    content = response['choices'][0]['message']['content']
-    sentiment_data = json.loads(content)
+    # Parsing the response into a dictionary
+    response_data = response.choices[0].message.content.strip()
+
+    # Converting the JSON string into a Python dictionary
+    sentiment_data = json.loads(response_data)
 
     return sentiment_data
 
+
 def process_comments(file: str):
     # Reading the comments.csv file into a DataFrame
-    df = pd.read_csv(file, delimiter=';')
-    df.columns = ['Author', 'Content', 'NumberOfReplies', 'NumberofThumbsUp', 'IsReply']
+    df = pd.read_csv(file, delimiter=';', encoding='ISO-8859-1')
+    df.columns = ['Author', 'Content', 'NumberOfReplies', 'NumberofThumbsUp', 'IsReply', 'Extra']
 
     # Remove unnecessary columns
-    df = df.drop(columns=["extra"], errors="ignore")
-
-    # Limit to 2 rows for testing purposes
-    df = df.head(2)
+    df = df.drop(columns=["Extra"], errors="ignore")
 
     # Apply get_sentiment and expand the returned dictionaries into separate columns
     sentiment_data = df['Content'].apply(get_sentiment)
