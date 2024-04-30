@@ -38,6 +38,8 @@ def process_comments(file: str):
     # Remove unnecessary columns
     df = df.drop(columns=["Extra"], errors="ignore")
 
+    df = df.head(3)
+
     # Apply get_sentiment and expand the returned dictionaries into separate columns
     sentiment_data = df['Content'].apply(get_sentiment)
     sentiment_df = pd.DataFrame(sentiment_data.tolist())
@@ -45,8 +47,10 @@ def process_comments(file: str):
     # Concatenate the new columns to the original DataFrame
     df = pd.concat([df, sentiment_df], axis=1)
 
+
+
     # Save the updated DataFrame to a new CSV file
-    df.to_csv('sentiment-analysis/data/comments_with_sentiment.csv', index=False, sep=';')
+    df.to_csv('sentiment-analysis/data/comments_with_sentiment.csv', index=False, sep=';', encoding='ISO-8859-1')
 
 if __name__ == '__main__':
     file = 'sentiment-analysis/data/comments.csv'
