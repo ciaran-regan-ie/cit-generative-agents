@@ -1,3 +1,4 @@
 .env
 *.csv
 sentiment-analysis/.DS_Store
+.DS_Store
