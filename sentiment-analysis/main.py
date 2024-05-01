@@ -6,7 +6,6 @@ import os
 import json
 import csv
 import asyncio
-import aiohttp
 from aiohttp import ClientSession
 from dotenv import load_dotenv
 
